@@ -1,0 +1,112 @@
+[
+  {
+    "question": "使用 WITH (NOLOCK) 的潛在風險是什麼？",
+    "options": [
+      "資料遺失",
+      "脫離交易一致性",
+      "引發死結",
+      "降低 CPU 使用率"
+    ],
+    "answer": 1,
+    "explanation": "NOLOCK 會導致讀取未提交的資料，造成一致性問題。"
+  },
+  {
+    "question": "哪一個語法可以產生階層式資料？",
+    "options": [
+      "GROUP BY ROLLUP",
+      "CTE RECURSIVE",
+      "PIVOT",
+      "MERGE"
+    ],
+    "answer": 1,
+    "explanation": "CTE 遞迴是 SQL Server 中產生階層式資料的標準方式。"
+  },
+  {
+    "question": "哪種索引最適合大量查詢但寫入較少的場景？",
+    "options": [
+      "聚集索引",
+      "非聚集索引",
+      "全文索引",
+      "唯一索引"
+    ],
+    "answer": 1,
+    "explanation": "非聚集索引提供快速查詢，適合查多寫少的場景。"
+  },
+  {
+    "question": "以下哪一種情況可能導致 Index Scan 而非 Seek？",
+    "options": [
+      "沒有 WHERE 子句",
+      "條件沒用到索引欄位",
+      "索引順序不符",
+      "以上皆是"
+    ],
+    "answer": 3,
+    "explanation": "上述皆可能導致 SQL Server 放棄 Seek。"
+  },
+  {
+    "question": "ROW_NUMBER() OVER (...) 通常用於？",
+    "options": [
+      "計算總和",
+      "產生分組總數",
+      "找出每組的 Top N",
+      "合併資料表"
+    ],
+    "answer": 2,
+    "explanation": "ROW_NUMBER 可用來選出每組中的第幾名，常用於 Top 1/Top N。"
+  },
+  {
+    "question": "哪個語法可以計算 Running Total（累積值）？",
+    "options": [
+      "SUM() OVER (PARTITION BY...)",
+      "GROUPING SETS",
+      "CROSS APPLY",
+      "GROUP BY"
+    ],
+    "answer": 0,
+    "explanation": "SUM() OVER 可根據順序產生每一筆的累積總和。"
+  },
+  {
+    "question": "如何設為唯讀資料庫？",
+    "options": [
+      "USE [DB] WITH READONLY",
+      "SET DATABASE READONLY",
+      "ALTER DATABASE [DB] SET READ_ONLY",
+      "sp_dboption 'DB', 'read only', 'true'"
+    ],
+    "answer": 2,
+    "explanation": "ALTER DATABASE ... SET READ_ONLY 是現行正確寫法。"
+  },
+  {
+    "question": "如何追查目前交易鎖定的資源？",
+    "options": [
+      "sys.dm_tran_locks",
+      "sys.dm_exec_requests",
+      "Activity Monitor",
+      "以上皆可"
+    ],
+    "answer": 3,
+    "explanation": "SQL Server 提供多種 DMV 與工具協助鎖定追蹤。"
+  },
+  {
+    "question": "如何避免高併發下的 race condition？",
+    "options": [
+      "TABLOCKX",
+      "TRY...CATCH",
+      "ISOLATION LEVEL SERIALIZABLE",
+      "MERGE"
+    ],
+    "answer": 2,
+    "explanation": "Serializable 是最高等級隔離，能確保交易一致性。"
+  },
+  {
+    "question": "你要將老舊資料轉到歷史表，應該怎麼做？",
+    "options": [
+      "DELETE FROM 主表",
+      "TRUNCATE 主表",
+      "INSERT INTO 歷史表 + DELETE 原資料",
+      "直接 RENAME 表"
+    ],
+    "answer": 2,
+    "explanation": "INSERT + DELETE 可保留歷史資料並清除舊資料。"
+  }
+]
