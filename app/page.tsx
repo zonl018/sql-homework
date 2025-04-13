@@ -1,35 +1,22 @@
-
 'use client';
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Check, X } from "lucide-react";
-
-const quizData = [
-  {
-    question: "你想選出每個部門薪資最高的員工，應該使用下列哪個語法？",
-    options: [
-      "GROUP BY DepartmentID 搭配 MAX(Salary)",
-      "子查詢找出 MAX 再 JOIN 回原表",
-      "ROW_NUMBER() OVER (PARTITION BY DepartmentID ORDER BY Salary DESC)",
-      "以上皆可"
-    ],
-    answer: 3,
-    explanation:
-      "前三種方式都可以達成目標，但使用 ROW_NUMBER 搭配 PARTITION BY 是最靈活、常見的做法，尤其當你需要取回整筆資料時。"
-  },
-];
+import { useState, useEffect } from "react";
 
 export default function SqlQuizApp() {
   const [username, setUsername] = useState("");
   const [isStarted, setIsStarted] = useState(false);
+  const [quizData, setQuizData] = useState([]);
   const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
-  const [wrongList, setWrongList] = useState<number[]>([]);
+  const [wrongList, setWrongList] = useState([]);
   const [finished, setFinished] = useState(false);
+
+  useEffect(() => {
+    fetch("/quizData.json")
+      .then((res) => res.json())
+      .then((data) => setQuizData(data));
+  }, []);
 
   const quiz = quizData[current];
 
@@ -39,7 +26,7 @@ export default function SqlQuizApp() {
     }
   };
 
-  const handleAnswer = (index: number) => {
+  const handleAnswer = (index) => {
     if (selected !== null) return;
     setSelected(index);
     if (index === quiz.answer) {
@@ -55,6 +42,7 @@ export default function SqlQuizApp() {
   const nextQuestion = () => {
     if (current + 1 >= quizData.length) {
       setFinished(true);
+      alert("✅ 今日題目完成！請記得更新明天的 quizData.json！");
       return;
     }
     setSelected(null);
@@ -77,15 +65,21 @@ export default function SqlQuizApp() {
     return (
       <div className="max-w-md mx-auto p-4 space-y-4 text-center">
         <h1 className="text-2xl font-bold">爆擊訓練室</h1>
-        <p className="text-sm text-muted-foreground">請輸入你的暱稱開始練習：</p>
-        <Input
+        <p className="text-sm text-gray-500">請輸入你的暱稱開始練習：</p>
+        <input
+          type="text"
           placeholder="輸入暱稱..."
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          className="w-full px-3 py-2 border rounded"
         />
-        <Button onClick={startQuiz} disabled={!username.trim()}>
+        <button
+          onClick={startQuiz}
+          disabled={!username.trim()}
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        >
           開始測驗
-        </Button>
+        </button>
       </div>
     );
   }
@@ -107,52 +101,50 @@ export default function SqlQuizApp() {
         ) : (
           <p>你太猛啦！全部答對 👏</p>
         )}
-        <Button onClick={resetQuiz}>重新挑戰</Button>
+        <button onClick={resetQuiz} className="bg-green-600 text-white px-4 py-2 rounded">
+          重新挑戰
+        </button>
       </div>
     );
   }
 
   return (
     <div className="max-w-xl mx-auto p-4 space-y-4">
-      <Card>
-        <CardContent className="p-6 space-y-4">
-          <h2 className="text-xl font-bold">
-            第 {current + 1} 題：{quiz.question}
-          </h2>
-          <div className="space-y-2">
-            {quiz.options.map((option, index) => {
-              const isCorrect = index === quiz.answer;
-              const isSelected = selected === index;
-              return (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  disabled={selected !== null}
-                  onClick={() => handleAnswer(index)}
-                >
-                  {isSelected && isCorrect && <Check className="mr-2 text-green-500" />}
-                  {isSelected && !isCorrect && <X className="mr-2 text-red-500" />}
-                  {option}
-                </Button>
-              );
-            })}
+      <div className="border rounded-lg p-6 shadow">
+        <h2 className="text-xl font-bold mb-4">
+          第 {current + 1} 題：{quiz.question}
+        </h2>
+        <div className="space-y-2">
+          {quiz.options.map((option, index) => {
+            const isCorrect = index === quiz.answer;
+            const isSelected = selected === index;
+            return (
+              <button
+                key={index}
+                disabled={selected !== null}
+                onClick={() => handleAnswer(index)}
+                className={`w-full text-left px-4 py-2 border rounded
+                  ${isSelected && isCorrect ? 'bg-green-100 border-green-500' : ''}
+                  ${isSelected && !isCorrect ? 'bg-red-100 border-red-500' : ''}`}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+        {showResult && (
+          <div className="pt-4 text-sm text-gray-600">
+            <p>✅ 正解：{quiz.options[quiz.answer]}</p>
+            <p className="mt-1">📘 解說：{quiz.explanation}</p>
+            <button
+              onClick={nextQuestion}
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              {current + 1 === quizData.length ? "查看結果" : "下一題"}
+            </button>
           </div>
-          {showResult && (
-            <div className="pt-4">
-              <p className="text-sm text-muted-foreground">
-                ✅ 正解：{quiz.options[quiz.answer]}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                📘 解說：{quiz.explanation}
-              </p>
-              <Button className="mt-4" onClick={nextQuestion}>
-                {current + 1 === quizData.length ? "查看結果" : "下一題"}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   );
 }
