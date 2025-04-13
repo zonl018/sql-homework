@@ -1,4 +1,4 @@
-import "../app/styles/globals.css"; // <== 加這一行在最上面
+import './styles/globals.css';
 
 export const metadata = {
   title: "SQL 爆擊測驗",
