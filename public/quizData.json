@@ -1,8 +1,0 @@
-[
-  {
-    "question": "哪一個語法可以避免 Race Condition？",
-    "options": ["MERGE", "TABLOCKX", "ISOLATION LEVEL SERIALIZABLE", "TRY...CATCH"],
-    "answer": 2,
-    "explanation": "Serializable 是最嚴格的隔離層級，能防止競爭條件"
-  }
-]
