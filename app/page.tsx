@@ -1,1 +1,0 @@
-<page.tsx content from canvas will be inserted here manually>
